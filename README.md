@@ -10,3 +10,7 @@ You only need to install two things properly on your host machine. Everything el
 - [Vagrant](https://www.vagrantup.com/downloads.html)
 
 When installing Vagrant, make sure you install a version that is new enough to match the version of VirtualBox installed.
+
+# Features
+
+- All virtual machines are running [Ubuntu 16.04 LTS (Xenial Xerus)](https://app.vagrantup.com/ubuntu/boxes/bionic64)
