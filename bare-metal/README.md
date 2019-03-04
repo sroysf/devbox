@@ -11,3 +11,4 @@ Provides several "bare-metal" hosts, networked together on a private network.
 - Containerd v.1.2.4-1
 - Docker Compose v.1.23.2
 - Single pull-through caching local Docker registry for all cluster nodes
+- Envoy latest binary pre-installed on every node

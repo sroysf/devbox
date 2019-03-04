@@ -1,0 +1,69 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  config.vm.provider "virtualbox"
+
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/xenial64"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  config.vm.define "cephserver" do |cephserver|
+    # Create a private network, which allows host-only access to the machine
+    # using a specific IP.
+    cephserver.vm.network "private_network", ip: "192.168.50.100"
+    cephserver.vm.hostname = "cephserver"
+
+    cephserver.vm.provider "virtualbox" do |vb|
+     # Display the VirtualBox GUI when booting the machine
+     vb.gui = false
+     # Customize the amount of memory on the VM:
+     vb.memory = "1024"
+
+     vb.name = "cephserver"
+
+     # Get disk path
+     line = `VBoxManage list systemproperties | grep "Default machine folder"`
+     vb_machine_folder = line.split(':')[1].strip()
+     second_disk = File.join(vb_machine_folder, vb.name, 'disk2.vdi')
+
+     # Create and attach disk
+     unless File.exist?(second_disk)
+       vb.customize ['createhd', '--filename', second_disk, '--format', 'VDI', '--size', 60 * 1024]
+     end
+      # vb.customize ['storagectl', :id, '--name', 'SATA Controller', '--add', 'sata', '--portcount', 4, '--bootable', 'off']
+      vb.customize ['storageattach', :id, '--storagectl', 'SCSI', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', second_disk]
+    end
+
+    # cephserver specific provisioning actions
+    cephserver.vm.provision "shell", inline: <<-SHELL
+    echo "Hello World"
+    SHELL
+  end
+
+end
