@@ -1,0 +1,3 @@
+Host cephnode1
+   Hostname cephnode1
+   User cephdeploy
