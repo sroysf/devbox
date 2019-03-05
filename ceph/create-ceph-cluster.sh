@@ -15,7 +15,12 @@ ceph-deploy mgr create ${CEPH_NODE}
 ceph-deploy disk zap ${CEPH_NODE} /dev/sdc
 ceph-deploy disk zap ${CEPH_NODE} /dev/sdd
 ceph-deploy osd create ${CEPH_NODE} --data /dev/sdc
-ceph-deploy osd create ${CEPH_NODE} --data /dev/sdd
+
+
+ceph-deploy mgr create ${CEPH_NODE}
+ceph-deploy rgw create ${CEPH_NODE}
+
+
 echo "Ceph cluster health: $(ssh ${CEPH_NODE} sudo ceph health)"
 echo "Ceph cluster detailed view:"
 ssh ${CEPH_NODE} sudo ceph -s

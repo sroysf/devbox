@@ -1,3 +1,15 @@
 Host cephnode1
    Hostname cephnode1
    User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode2
+  Hostname cephnode2
+  User cephdeploy
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null
+Host cephnode3
+   Hostname cephnode3
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null

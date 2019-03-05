@@ -33,93 +33,44 @@ Vagrant.configure("2") do |config|
   # via 127.0.0.1 to disable public access
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
-  # ============================= Ceph Admin Node Specific Configuration ========================
-
-  config.vm.define "cephadmin" do |cephadmin|
-    # Create a private network, which allows host-only access to the machine
-    # using a specific IP.
-    cephadmin.vm.network "private_network", ip: "192.168.50.100"
-    cephadmin.vm.hostname = "cephadmin"
-
-    cephadmin.vm.provider "virtualbox" do |vb|
-     # Display the VirtualBox GUI when booting the machine
-     vb.gui = false
-     # Customize the amount of memory on the VM:
-     vb.memory = "1024"
-     vb.name = "cephadmin"
-    end
-
-    # cephadmin specific provisioning actions
-    # http://docs.ceph.com/docs/luminous/start/quick-start-preflight/
-    cephadmin.vm.provision "shell", inline: <<-SHELL
-      echo "Installing ceph-deploy and Ceph prerequisites"
-      wget -q -O- 'https://download.ceph.com/keys/release.asc' | apt-key add -
-      echo "deb http://download.ceph.com/debian-luminous/ xenial main" | tee /etc/apt/sources.list.d/ceph.list
-      apt-get update
-      apt-get install -y ceph-deploy
-
-      # Setup private key for accessing the ceph nodes
-      cp /vagrant/keys/cephdeploy-key /home/vagrant/.ssh/id_rsa
-
-      # SSH config to automatically select the right user
-      # NOTE: Update this file if adding additional OSD nodes!
-      cp /home/vagrant/config /home/vagrant/.ssh/
-      chown vagrant:vagrant /home/vagrant/.ssh/*
-      chmod 600 /home/vagrant/.ssh/id_rsa
-    SHELL
-  end
-
   # ============================= Ceph Node Specific Configuration ========================
 
   config.vm.define "cephnode1" do |cephnode1|
-    # Create a private network, which allows host-only access to the machine
-    # using a specific IP.
     cephnode1.vm.network "private_network", ip: "192.168.50.101"
     cephnode1.vm.hostname = "cephnode1"
-
     cephnode1.vm.provider "virtualbox" do |vb|
-     # Display the VirtualBox GUI when booting the machine
-     vb.gui = false
-     # Customize the amount of memory on the VM:
-     vb.memory = "1024"
-     vb.name = "cephnode1"
+      attachStorageDisk(vb, "cephnode1")
+    end
+  end
 
-     # Get disk path
-     line = `VBoxManage list systemproperties | grep "Default machine folder"`
-     vb_machine_folder = line.split(':')[1].strip()
-     second_disk = File.join(vb_machine_folder, vb.name, 'disk2.vdi')
-     third_disk = File.join(vb_machine_folder, vb.name, 'disk3.vdi')
-     disk_size_mb = 2 * 1024
+  config.vm.define "cephnode2" do |cephnode2|
+    cephnode2.vm.network "private_network", ip: "192.168.50.102"
+    cephnode2.vm.hostname = "cephnode2"
+    cephnode2.vm.provider "virtualbox" do |vb|
+      attachStorageDisk(vb, "cephnode2")
+    end
+  end
 
-     # Create and attach disks
-     unless File.exist?(second_disk)
-       vb.customize ['createhd', '--filename', second_disk, '--format', 'VDI', '--size', disk_size_mb]
-     end
-     unless File.exist?(third_disk)
-       vb.customize ['createhd', '--filename', third_disk, '--format', 'VDI', '--size', disk_size_mb]
-     end
-      # vb.customize ['storagectl', :id, '--name', 'SATA Controller', '--add', 'sata', '--portcount', 4, '--bootable', 'off']
-      vb.customize ['storageattach', :id, '--storagectl', 'SCSI', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', second_disk]
-      vb.customize ['storageattach', :id, '--storagectl', 'SCSI', '--port', 3, '--device', 0, '--type', 'hdd', '--medium', third_disk]
+  config.vm.define "cephnode3" do |cephnode3|
+    cephnode3.vm.network "private_network", ip: "192.168.50.103"
+    cephnode3.vm.hostname = "cephnode3"
+    cephnode3.vm.provider "virtualbox" do |vb|
+      attachStorageDisk(vb, "cephnode3")
+    end
+  end
+
+  # Admin server setup is a little different than the others
+  config.vm.define "cephadmin" do |cephadmin|
+    cephadmin.vm.network "private_network", ip: "192.168.50.100"
+    cephadmin.vm.hostname = "cephadmin"
+    cephadmin.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "1024"
+      vb.name = "cephadmin"
     end
 
-    # cephnode1 specific provisioning actions
-    # http://docs.ceph.com/docs/luminous/start/quick-start-preflight/
-    cephnode1.vm.provision "shell", inline: <<-SHELL
-      echo "Provisioning ceph node specific "
-      apt-get install -y python-minimal
-
-      # Setup user for ceph deploy ssh access
-      export CEPH_USER=cephdeploy
-      sudo useradd -d /home/${CEPH_USER} ${CEPH_USER}
-      echo "${CEPH_USER} ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/${CEPH_USER}
-      sudo chmod 0440 /etc/sudoers.d/${CEPH_USER}
-
-      mkdir /home/cephdeploy
-      mkdir /home/cephdeploy/.ssh
-      cat /vagrant/keys/cephdeploy-key.pub >> ~cephdeploy/.ssh/authorized_keys
-      chown -R cephdeploy:cephdeploy /home/cephdeploy
-      chmod 644 ~cephdeploy/.ssh/authorized_keys
+    cephadmin.vm.provision "shell", inline: <<-SHELL
+      bash /vagrant/admin-setup.sh
     SHELL
   end
 
@@ -127,6 +78,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
 
     echo "Running global provisioning for all ceph nodes"
+    bash /vagrant/node-setup.sh
     apt-get install -y ntp
 
     # =====================================
@@ -134,4 +86,25 @@ Vagrant.configure("2") do |config|
     # =====================================
     cat /vagrant/hosts >> /etc/hosts
   SHELL
+end
+
+def attachStorageDisk(vb, name)
+  # Display the VirtualBox GUI when booting the machine
+  vb.gui = false
+  # Customize the amount of memory on the VM:
+  vb.memory = "1024"
+  vb.name = name
+
+  # Get disk path
+  line = `VBoxManage list systemproperties | grep "Default machine folder"`
+  vb_machine_folder = line.split(':')[1].strip()
+  second_disk = File.join(vb_machine_folder, vb.name, 'disk2.vdi')
+  disk_size_mb = 2 * 1024
+
+  # Create and attach disks
+  unless File.exist?(second_disk)
+    vb.customize ['createhd', '--filename', second_disk, '--format', 'VDI', '--size', disk_size_mb]
+  end
+
+  vb.customize ['storageattach', :id, '--storagectl', 'SCSI', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', second_disk]
 end
