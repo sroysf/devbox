@@ -107,6 +107,8 @@ Vagrant.configure("2") do |config|
     # http://docs.ceph.com/docs/luminous/start/quick-start-preflight/
     cephnode1.vm.provision "shell", inline: <<-SHELL
       echo "Provisioning ceph node specific "
+      apt-get install -y python-minimal
+
       # Setup user for ceph deploy ssh access
       export CEPH_USER=cephdeploy
       sudo useradd -d /home/${CEPH_USER} ${CEPH_USER}
