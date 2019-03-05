@@ -4,23 +4,34 @@
 # Initialize Ceph cluster with 1 node, 2 OSDs
 # http://docs.ceph.com/docs/luminous/start/quick-ceph-deploy/
 
+function osdConf {
+  CEPH_NODE=$1
+  echo "Configuring OSD : ${CEPH_NODE}"
+  ceph-deploy disk zap ${CEPH_NODE} /dev/sdc
+  ceph-deploy osd create ${CEPH_NODE} --data /dev/sdc
+}
+
+
 export CEPH_NODE="cephnode1"
 mkdir my-cluster
 cd my-cluster
-ceph-deploy new ${CEPH_NODE}
-ceph-deploy install ${CEPH_NODE}
+ceph-deploy new cephnode1
+ceph-deploy install cephnode1 cephnode2 cephnode3
 ceph-deploy mon create-initial
-ceph-deploy admin ${CEPH_NODE}
-ceph-deploy mgr create ${CEPH_NODE}
-ceph-deploy disk zap ${CEPH_NODE} /dev/sdc
-ceph-deploy disk zap ${CEPH_NODE} /dev/sdd
-ceph-deploy osd create ${CEPH_NODE} --data /dev/sdc
+ceph-deploy admin cephnode1 cephnode2 cephnode3
+ceph-deploy mgr create cephnode1
+osdConf cephnode1
+osdConf cephnode2
+osdConf cephnode3
 
+echo "Ceph cluster initial health: $(ssh cephnode1 sudo ceph health)"
 
-ceph-deploy mgr create ${CEPH_NODE}
-ceph-deploy rgw create ${CEPH_NODE}
+ceph-deploy rgw create cephnode1
+ceph-deploy mds create cephnode1
 
+ceph-deploy mon add cephnode2 cephnode3
+ceph-deploy mgr create cephnode2 cephnode3
 
-echo "Ceph cluster health: $(ssh ${CEPH_NODE} sudo ceph health)"
+echo "Ceph cluster health after full setup: $(ssh cephnode1 sudo ceph health)"
 echo "Ceph cluster detailed view:"
-ssh ${CEPH_NODE} sudo ceph -s
+ssh cephnode1 sudo ceph -s

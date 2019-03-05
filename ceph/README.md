@@ -4,8 +4,10 @@ Provisions a Ceph storage cluster with following topology:
 
 - cephadmin @ 192.168.50.100
 - cephnode1 @ 192.168.50.101
+- cephnode1 @ 192.168.50.102
+- cephnode1 @ 192.168.50.103
 
-Cluster has 2 OSD's on cephnode1
+Each of the nodes has a disk with OSD configured for cluster.
 
 # Usage
 
