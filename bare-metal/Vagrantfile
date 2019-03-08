@@ -72,8 +72,10 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
    # Display the VirtualBox GUI when booting the machine
    vb.gui = false
+   vb.linked_clone = true
+
    # Customize the amount of memory on the VM:
-   vb.memory = "2048"
+   vb.memory = "4096"
   end
 
   #
@@ -90,48 +92,9 @@ Vagrant.configure("2") do |config|
   # =====================================
   cat /vagrant/hosts >> /etc/hosts
 
-  # ==========================
-  # Download Docker packages
-  # ==========================
-  wget -nv https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_18.09.3~3-0~ubuntu-xenial_amd64.deb
-  wget -nv https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce-cli_18.09.3~3-0~ubuntu-xenial_amd64.deb
-  wget -nv https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/containerd.io_1.2.4-1_amd64.deb
+  bash /vagrant/install-docker.sh
+  bash /vagrant/install-envoy.sh
+  bash /vagrant/install-kubernetes.sh
 
-  # ==========================
-  # Install Docker
-  # ==========================
-  dpkg -i containerd.io_1.2.4-1_amd64.deb
-  dpkg -i docker-ce-cli_18.09.3~3-0~ubuntu-xenial_amd64.deb
-  dpkg -i docker-ce_18.09.3~3-0~ubuntu-xenial_amd64.deb
-  usermod -a -G docker vagrant
-
-  # ==========================
-  # Install Docker Compose
-  # ==========================
-  curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  chmod +x /usr/local/bin/docker-compose
-
-  # ==================================================
-  # Setup Docker daemon to use local registry proxy
-  # ==================================================
-  cp /vagrant/docker-daemon.json /etc/docker/daemon.json
-  service docker restart
-
-  # ================================================================================
-  # Extract envoy binary and install on base VM, for non-Dockerized usage scenarios
-  # ================================================================================
-  docker run -v /home/vagrant:/home/vagrant -i envoyproxy/envoy /bin/bash -c 'cp $(which envoy) /home/vagrant/'
-  mv /home/vagrant/envoy /usr/local/bin/
-
-  # ================================================================================
-  # Kubernetes bootstrap installs
-  # ================================================================================
-  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-  apt-get update
-  apt-get install -y kubelet kubeadm kubectl
-  apt-mark hold kubelet kubeadm kubectl
   SHELL
 end
