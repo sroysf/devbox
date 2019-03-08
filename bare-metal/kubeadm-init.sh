@@ -2,10 +2,7 @@
 
 echo "Make sure this command is run as root"
 
-echo "--------------------------------------------"
-echo "Resetting kubernetes installation"
-kubeadm reset
-iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+bash /vagrant/kube-reset.sh
 
 echo "--------------------------------------------"
 echo "Deploying Kubernetes"
