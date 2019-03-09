@@ -1,0 +1,96 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  config.vm.provider "virtualbox"
+
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/xenial64"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # ============================= Ceph Node Specific Configuration ========================
+
+  config.vm.define "cephnode1" do |cephnode1|
+    cephnode1.vm.network "private_network", ip: "192.168.50.101"
+    cephnode1.vm.hostname = "cephnode1"
+    cephnode1.vm.provider "virtualbox" do |vb|
+      attachStorageDisk(vb, "cephnode1")
+    end
+  end
+
+  # Admin server setup is a little different than the others
+  config.vm.define "cephadmin" do |cephadmin|
+    cephadmin.vm.network "private_network", ip: "192.168.50.100"
+    cephadmin.vm.hostname = "cephadmin"
+    cephadmin.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "1024"
+      vb.name = "cephadmin"
+    end
+
+    cephadmin.vm.provision "shell", inline: <<-SHELL
+      bash /vagrant/admin-setup.sh
+    SHELL
+  end
+
+  # Global config
+  config.vm.provision "shell", inline: <<-SHELL
+
+    echo "Running global provisioning for all ceph nodes"
+    bash /vagrant/node-setup.sh
+    apt-get install -y ntp
+
+    # =====================================
+    # Make sure hosts are routable by name
+    # =====================================
+    cat /vagrant/hosts >> /etc/hosts
+  SHELL
+end
+
+def attachStorageDisk(vb, name)
+  # Display the VirtualBox GUI when booting the machine
+  vb.gui = false
+  #vb.linked_clone = true
+
+  # Customize the amount of memory on the VM:
+  vb.memory = "2048"
+  vb.name = name
+
+  # Get disk path
+  line = `VBoxManage list systemproperties | grep "Default machine folder"`
+  vb_machine_folder = line.split(':')[1].strip()
+  second_disk = File.join(vb_machine_folder, vb.name, 'disk2.vdi')
+  disk_size_mb = 2 * 1024
+
+  # Create and attach disks
+  unless File.exist?(second_disk)
+    vb.customize ['createhd', '--filename', second_disk, '--format', 'VDI', '--size', disk_size_mb]
+  end
+
+  vb.customize ['storageattach', :id, '--storagectl', 'SCSI', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', second_disk]
+end

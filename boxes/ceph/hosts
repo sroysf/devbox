@@ -1,0 +1,24 @@
+
+192.168.50.10   kubmaster
+192.168.50.11   kubnode1
+192.168.50.12   kubnode2
+192.168.50.13   kubnode3
+192.168.50.14   kubnode4
+192.168.50.15   kubnode5
+192.168.50.16   kubnode6
+192.168.50.17   kubnode7
+192.168.50.18   kubnode8
+192.168.50.19   kubnode9
+192.168.50.20   kubnode10
+
+192.168.50.100  cephadmin
+192.168.50.101  cephnode1
+192.168.50.102  cephnode2
+192.168.50.103  cephnode3
+192.168.50.104  cephnode4
+192.168.50.105  cephnode5
+192.168.50.106  cephnode6
+192.168.50.107  cephnode7
+192.168.50.108  cephnode8
+192.168.50.109  cephnode9
+192.168.50.110  cephnode10

@@ -1,0 +1,100 @@
+Host cephnode1
+   Hostname cephnode1
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode2
+   Hostname cephnode2
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode3
+   Hostname cephnode3
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode4
+   Hostname cephnode4
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode5
+   Hostname cephnode5
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode6
+   Hostname cephnode6
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode7
+   Hostname cephnode7
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode8
+   Hostname cephnode8
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode9
+   Hostname cephnode9
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host cephnode10
+   Hostname cephnode10
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode1
+   Hostname kubnode1
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode2
+   Hostname kubnode2
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode3
+   Hostname kubnode3
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode4
+   Hostname kubnode4
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode5
+   Hostname kubnode5
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode6
+   Hostname kubnode6
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode7
+   Hostname kubnode7
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode8
+   Hostname kubnode8
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode9
+   Hostname kubnode9
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+Host kubnode10
+   Hostname kubnode10
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
