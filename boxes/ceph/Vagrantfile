@@ -35,25 +35,25 @@ Vagrant.configure("2") do |config|
 
   # ============================= Ceph Node Specific Configuration ========================
 
-  config.vm.define "cephnode1" do |cephnode1|
-    cephnode1.vm.network "private_network", ip: "192.168.50.101"
-    cephnode1.vm.hostname = "cephnode1"
-    cephnode1.vm.provider "virtualbox" do |vb|
-      attachStorageDisk(vb, "cephnode1")
+  config.vm.define "cephnodebox" do |cephnodebox|
+    cephnodebox.vm.network "private_network", ip: "192.168.50.101"
+    cephnodebox.vm.hostname = "cephnodebox"
+    cephnodebox.vm.provider "virtualbox" do |vb|
+      attachStorageDisk(vb, "cephnodebox")
     end
   end
 
   # Admin server setup is a little different than the others
-  config.vm.define "cephadmin" do |cephadmin|
-    cephadmin.vm.network "private_network", ip: "192.168.50.100"
-    cephadmin.vm.hostname = "cephadmin"
-    cephadmin.vm.provider "virtualbox" do |vb|
+  config.vm.define "cephadminbox" do |cephadminbox|
+    cephadminbox.vm.network "private_network", ip: "192.168.50.100"
+    cephadminbox.vm.hostname = "cephadminbox"
+    cephadminbox.vm.provider "virtualbox" do |vb|
       vb.gui = false
       vb.memory = "1024"
-      vb.name = "cephadmin"
+      vb.name = "cephadminbox"
     end
 
-    cephadmin.vm.provision "shell", inline: <<-SHELL
+    cephadminbox.vm.provision "shell", inline: <<-SHELL
       bash /vagrant/admin-setup.sh
     SHELL
   end

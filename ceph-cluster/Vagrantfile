@@ -1,0 +1,66 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  config.vm.provider "virtualbox"
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # ============================= Ceph Node Specific Configuration ========================
+
+  # Admin server setup is a little different than the others
+  config.vm.define "cephadmin" do |cephadmin|
+    cephadmin.vm.box = "sroysf/cephadmin"
+    cephadmin.vm.network "private_network", ip: "192.168.50.100"
+    cephadmin.vm.hostname = "cephadmin"
+    cephadmin.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.linked_clone = true
+      vb.memory = "2048"
+      vb.name = "cephadmin"
+    end
+
+    cephadmin.vm.provision "shell", inline: <<-SHELL
+      #bash /vagrant/admin-setup.sh
+    SHELL
+  end
+
+  config.vm.define "cephnode1" do |cephnode1|
+    cephnode1.vm.box = "sroysf/cephnode"
+    cephnode1.vm.network "private_network", ip: "192.168.50.101"
+    cephnode1.vm.hostname = "cephnode1"
+    cephnode1.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.linked_clone = true
+      vb.memory = "2048"
+      vb.name = "cephnode1"
+    end
+  end  
+
+  # Global config
+  config.vm.provision "shell", inline: <<-SHELL
+
+    echo "Running global provisioning for all ceph nodes"
+    #bash /vagrant/node-setup.sh
+    #apt-get install -y ntp
+
+    # =====================================
+    # Make sure hosts are routable by name
+    # =====================================
+    #cat /vagrant/hosts >> /etc/hosts
+  SHELL
+end

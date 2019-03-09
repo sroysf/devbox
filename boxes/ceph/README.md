@@ -11,17 +11,22 @@ $ vagrant up
 Once the hardware is up and running properly, create the ceph cluster.
 
 <pre>
-$ vagrant ssh cephadmin
-$ ceph-deploy install cephnode1
+$ vagrant ssh cephadminbox
+$ ceph-deploy install cephnodebox
 </pre>
 
 # Prepare the machines for packaging
 
+From host machine...
+
 <pre>
-$ bash ./package-prep.sh
+$ vagrant ssh cephadminbox -c "bash /vagrant/package-prep-internal.sh"
+$ vagrant ssh cephnodebox -c "bash /vagrant/package-prep-internal.sh"
 </pre>
 
 # Create boxes from VMs
+
+From host machine...
 
 <pre>
 $ bash ./create-boxes.sh

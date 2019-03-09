@@ -1,3 +1,8 @@
+Host cephnodebox
+   Hostname cephnodebox
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
 Host cephnode1
    Hostname cephnode1
    User cephdeploy
