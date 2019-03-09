@@ -39,6 +39,8 @@ Vagrant.configure("2") do |config|
     SHELL
   end
 
+  # Add as many nodes as you like here, follow the pattern and increment the number
+  # Example: cephnode2, cephnode3
   config.vm.define "cephnode1" do |cephnode1|
     cephnode1.vm.box = "sroysf/cephnode"
     cephnode1.vm.network "private_network", ip: "192.168.50.101"
@@ -49,7 +51,31 @@ Vagrant.configure("2") do |config|
       vb.memory = "2048"
       vb.name = "cephnode1"
     end
-  end  
+  end
+
+  config.vm.define "cephnode2" do |cephnode2|
+    cephnode2.vm.box = "sroysf/cephnode"
+    cephnode2.vm.network "private_network", ip: "192.168.50.101"
+    cephnode2.vm.hostname = "cephnode2"
+    cephnode2.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.linked_clone = true
+      vb.memory = "2048"
+      vb.name = "cephnode2"
+    end
+  end
+
+  config.vm.define "cephnode3" do |cephnode3|
+    cephnode3.vm.box = "sroysf/cephnode"
+    cephnode3.vm.network "private_network", ip: "192.168.50.101"
+    cephnode3.vm.hostname = "cephnode3"
+    cephnode3.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.linked_clone = true
+      vb.memory = "2048"
+      vb.name = "cephnode3"
+    end
+  end
 
   # Global config
   config.vm.provision "shell", inline: <<-SHELL
