@@ -14,3 +14,6 @@ cp /vagrant/keys/cephdeploy-key /home/vagrant/.ssh/id_rsa
 cp /vagrant/config /home/vagrant/.ssh/
 chown vagrant:vagrant /home/vagrant/.ssh/*
 chmod 600 /home/vagrant/.ssh/id_rsa
+
+# Get all the ceph client stuff installed
+ceph-deploy install cephnodebox

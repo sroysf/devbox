@@ -43,27 +43,13 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Admin server setup is a little different than the others
-  config.vm.define "cephadminbox" do |cephadminbox|
-    cephadminbox.vm.network "private_network", ip: "192.168.50.100"
-    cephadminbox.vm.hostname = "cephadminbox"
-    cephadminbox.vm.provider "virtualbox" do |vb|
-      vb.gui = false
-      vb.memory = "1024"
-      vb.name = "cephadminbox"
-    end
-
-    cephadminbox.vm.provision "shell", inline: <<-SHELL
-      bash /vagrant/admin-setup.sh
-    SHELL
-  end
-
   # Global config
   config.vm.provision "shell", inline: <<-SHELL
 
     echo "Running global provisioning for all ceph nodes"
     bash /vagrant/node-setup.sh
     apt-get install -y ntp
+    bash /vagrant/admin-setup.sh
 
     # =====================================
     # Make sure hosts are routable by name
@@ -80,6 +66,7 @@ def attachStorageDisk(vb, name)
   # Customize the amount of memory on the VM:
   vb.memory = "2048"
   vb.name = name
+  vb.linked_clone = true
 
   # Get disk path
   line = `VBoxManage list systemproperties | grep "Default machine folder"`

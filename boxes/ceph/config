@@ -1,5 +1,5 @@
-Host cephnodebox
-   Hostname cephnodebox
+Host cephadmin
+   Hostname cephadmin
    User cephdeploy
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
@@ -53,6 +53,16 @@ Host cephnode10
    User cephdeploy
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
+Host cephnodebox
+   Hostname cephnodebox
+   User cephdeploy
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null      
+Host kubmaster
+  Hostname kubmaster
+  User cephdeploy
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null
 Host kubnode1
    Hostname kubnode1
    User cephdeploy
