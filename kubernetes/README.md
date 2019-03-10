@@ -2,8 +2,8 @@
 
 Provides several "bare-metal" hosts, networked together on a private network.
 
-- master @ 192.168.50.10
-- node1  @ 192.168.50.11
+- kubmaster @ 192.168.50.10
+- kubnode1  @ 192.168.50.11
 
 # Features
 
@@ -29,7 +29,7 @@ Setting up the Kubernetes cluster requires some minimal manual steps.
 **Important** : Run kubeadm-init.sh as root user
 
 <pre>
-$ vagrant ssh master
+$ vagrant ssh kubmaster
 $ sudo su -
 $ bash /vagrant/kubeadm-init.sh
 </pre>
@@ -39,7 +39,7 @@ $ bash /vagrant/kubeadm-init.sh
 **Important** : Run deploy-pod-network.sh as vagrant user
 
 <pre>
-$ vagrant ssh master
+$ vagrant ssh kubmaster
 $ bash /vagrant/deploy-pod-network.sh
 </pre>
 

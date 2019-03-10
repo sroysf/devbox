@@ -2,3 +2,4 @@
 **/*.box
 **/*.log
 **/.vagrant/
+**/join-cmd.sh

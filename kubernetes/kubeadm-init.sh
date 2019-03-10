@@ -5,6 +5,10 @@ echo "Make sure this command is run as root"
 bash /vagrant/kube-reset.sh
 
 echo "--------------------------------------------"
+echo "Pulling Kubernetes images"
+kubeadm config images pull
+
+echo "--------------------------------------------"
 echo "Deploying Kubernetes"
 export PRIVATE_IP=$(ifconfig | grep 192.168 | awk -F  ":" '/192.168/ {print $2}' | cut -f1 -d' ')
 export NODE_NAME=$(hostname -s)

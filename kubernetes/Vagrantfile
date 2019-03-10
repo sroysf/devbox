@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "sroysf/kubbox"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -33,25 +33,31 @@ Vagrant.configure("2") do |config|
   # via 127.0.0.1 to disable public access
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
-  config.vm.define "master" do |master|
+  config.vm.define "kubmaster" do |kubmaster|
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    master.vm.network "private_network", ip: "192.168.50.10"
-    master.vm.hostname = "master"
+    kubmaster.vm.network "private_network", ip: "192.168.50.10"
+    kubmaster.vm.hostname = "kubmaster"
+    kubmaster.vm.provider "virtualbox" do |vb|
+      vb.name = "kubmaster"
+    end
 
     # Master specific provisioning actions
-    master.vm.provision "shell", inline: <<-SHELL
-    echo "Starting private Docker registry for cluster"
-    mkdir /docker-images
-    docker run -d -p 5000:5000 --restart=always --name registry -v /vagrant/docker-registry/config.yml:/etc/docker/registry/config.yml -v /docker-images:/docker-images registry:2
+    kubmaster.vm.provision "shell", inline: <<-SHELL
+      echo "Starting private Docker registry for cluster"
+      mkdir /docker-images
+      docker run -d -p 5000:5000 --restart=always --name registry -v /vagrant/docker-registry/config.yml:/etc/docker/registry/config.yml -v /docker-images:/docker-images registry:2
     SHELL
   end
 
-  config.vm.define "node1" do |node1|
+  config.vm.define "kubnode1" do |kubnode1|
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    node1.vm.network "private_network", ip: "192.168.50.11"
-    node1.vm.hostname = "node1"
+    kubnode1.vm.network "private_network", ip: "192.168.50.11"
+    kubnode1.vm.hostname = "node1"
+    kubnode1.vm.provider "virtualbox" do |vb|
+      vb.name = "kubnode1"
+    end
   end
 
   # Create a public network, which generally matched to bridged network.
@@ -86,15 +92,10 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-
-  # =====================================
-  # Make sure hosts are routable by name
-  # =====================================
-  cat /vagrant/hosts >> /etc/hosts
-
-  bash /vagrant/install-docker.sh
-  bash /vagrant/install-envoy.sh
-  bash /vagrant/install-kubernetes.sh
-
+    # ==================================================
+    # Setup Docker daemon to use local registry proxy
+    # ==================================================
+    cp /vagrant/docker-daemon.json /etc/docker/daemon.json
+    service docker restart
   SHELL
 end

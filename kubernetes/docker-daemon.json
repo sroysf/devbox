@@ -1,4 +1,4 @@
 {
-    "insecure-registries" : ["master:5000"],
-    "registry-mirrors": ["http://master:5000"]
+    "insecure-registries" : ["kubmaster:5000"],
+    "registry-mirrors": ["http://kubmaster:5000"]
 }
